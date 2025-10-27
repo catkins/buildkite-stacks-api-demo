@@ -1,0 +1,50 @@
+services:
+  redis:
+    image: valkey/valkey:9.0.0-alpine
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  server:
+    build: .
+    command: server
+    env_file: .env
+    environment:
+      - REDIS_ADDR=redis:6379
+      - LISTEN=:18888
+    ports:
+      - "18888:18888"
+    depends_on:
+      redis:
+        condition: service_healthy
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+
+  worker:
+    build: .
+    command: worker
+    env_file: .env
+    environment:
+      - WORKER_API_SERVER=${WORKER_API_SERVER:-http://server:18888}
+      - WORKER_AGENT_QUERY_RULES=${WORKER_AGENT_QUERY_RULES:-queue=default}
+      - WORKER_TAGS=${WORKER_TAGS}
+      - WORKER_QUEUE=${WORKER_QUEUE:-default}
+    depends_on:
+      - server
+    restart: unless-stopped
+    scale: 5
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+    # override Scale workers as needed:
+    # docker-compose up -d --scale worker=3
+
+volumes:
+  redis-data:

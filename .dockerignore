@@ -1,0 +1,50 @@
+# Environment files with secrets
+.env
+.env.*
+*.env
+
+# Binaries
+bin/
+buildkite-custom-scheduler
+scheduler
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+LICENSE
+*.md
+
+# CI/CD
+.github/
+.buildkite/
+
+# Go
+*.test
+*.out
+go.work
+go.work.sum
+
+# Docker
+docker-compose.yml
+docker-compose.override.yml
+Dockerfile
+.dockerignore
